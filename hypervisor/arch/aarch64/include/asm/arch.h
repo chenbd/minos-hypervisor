@@ -310,4 +310,6 @@ int __arch_init(void);
 int arch_early_init(void *data);
 void arch_init_vcpu(struct vcpu *vcpu, void *entry);
 
+void inject_data_abort(uint64_t far_el1, uint64_t esr);
+
 #endif

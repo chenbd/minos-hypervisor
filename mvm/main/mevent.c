@@ -65,6 +65,7 @@ struct mevent {
 	int	me_cq;
 	int	me_state;
 	int	me_closefd;
+	int	flags;
 
 	LIST_ENTRY(mevent) me_list;
 };
@@ -153,22 +154,10 @@ mevent_destroy(void)
 	mevent_qunlock();
 }
 
-static void
-mevent_handle(struct epoll_event *kev, int numev)
-{
-	int i;
-	struct mevent *mevp;
-
-	for (i = 0; i < numev; i++) {
-		mevp = kev[i].data.ptr;
-		/* XXX check for EV_ERROR ? */
-		(*mevp->me_func)(mevp->me_fd, mevp->me_type, mevp->me_param);
-	}
-}
-
 struct mevent *
 mevent_add(int tfd, enum ev_type type,
-	   void (*func)(int, enum ev_type, void *), void *param)
+	   void (*func)(int, enum ev_type, void *),
+	   void *param, int flags)
 {
 	int ret;
 	struct epoll_event ee;
@@ -292,8 +281,8 @@ mevent_deinit(void)
 void *mevent_dispatch(void *data)
 {
 	struct epoll_event eventlist[MEVENT_MAX];
-	struct mevent *pipev;
-	int ret;
+	struct mevent *pipev, *mevp;
+	int ret, i;
 	struct vm *vm;
 
 	vm = (struct vm *)data;
@@ -314,7 +303,8 @@ void *mevent_dispatch(void *data)
 	/*
 	 * Add internal event handler for the pipe write fd
 	 */
-	pipev = mevent_add(mevent_pipefd[0], EVF_READ, mevent_pipe_read, NULL);
+	pipev = mevent_add(mevent_pipefd[0], EVF_READ,
+			mevent_pipe_read, NULL, 0);
 	assert(pipev != NULL);
 
 	for (;;) {
@@ -325,12 +315,17 @@ void *mevent_dispatch(void *data)
 		if (ret == -1 && errno != EINTR)
 			perror("Error return from epoll_wait");
 
-		if (vm->state == VM_STAT_SUSPEND)
-			continue;
-
 		/*
 		 * Handle reported events
 		 */
-		mevent_handle(eventlist, ret);
+		for (i = 0; i < ret; i++) {
+			mevp = eventlist[i].data.ptr;
+			if ((vm->state == VM_STAT_SUSPEND) &&
+					!(mevp->flags & MEVENT_F_CAN_WAKEUP))
+				continue;
+
+			/* XXX check for EV_ERROR ? */
+			(*mevp->me_func)(mevp->me_fd, mevp->me_type, mevp->me_param);
+		}
 	}
 }

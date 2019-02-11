@@ -214,6 +214,9 @@ static int create_vm_pdev_of(struct vm *vm, struct device_node *node)
 {
 	int ret = 0;
 
+	if (strncmp(node->name, "virtio_block", 12) == 0)
+		return 0;
+
 	ret += create_pdev_iomem_of(vm, node);
 	ret += create_pdev_virq_of(vm, node);
 

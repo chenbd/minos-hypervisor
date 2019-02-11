@@ -36,12 +36,14 @@ enum ev_type {
 	EVF_SIGNAL		/* Not supported yet */
 };
 
+#define MEVENT_F_CAN_WAKEUP	(1 << 0)
+
 struct mevent;
 struct vm;
 
 struct mevent *mevent_add(int fd, enum ev_type type,
 			  void (*func)(int, enum ev_type, void *),
-			  void *param);
+			  void *param, int flags);
 int	mevent_enable(struct mevent *evp);
 int	mevent_disable(struct mevent *evp);
 int	mevent_delete(struct mevent *evp);

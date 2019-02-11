@@ -821,7 +821,7 @@ virtio_net_tap_setup(struct virtio_net *net, char *devname)
 	}
 
 	net->mevp = mevent_add(net->tapfd, EVF_READ,
-			       virtio_net_rx_callback, net);
+			       virtio_net_rx_callback, net, 0);
 	if (net->mevp == NULL) {
 		pr_warn("Could not register event\n");
 		close(net->tapfd);
@@ -842,7 +842,7 @@ virtio_net_netmap_setup(struct virtio_net *net, char *ifname)
 	}
 
 	net->mevp = mevent_add(net->nmd->fd, EVF_READ,
-			       virtio_net_rx_callback, net);
+			       virtio_net_rx_callback, net, 0);
 	if (net->mevp == NULL) {
 		pr_warn("Could not register event\n");
 		nm_close(net->nmd);

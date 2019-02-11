@@ -265,6 +265,11 @@ static int dataabort_tfl_handler(gp_regs *regs, uint32_t esr_value)
 		if (ret) {
 			pr_warn("handle mmio read/write fail 0x%x vmid:%d\n",
 					paddr, get_vmid(current_vcpu));
+			/*
+			 * if failed to handle the mmio trap inject a
+			 * sync error to guest vm to generate a fault
+			 */
+			inject_data_abort(esr_value, vaddr);
 		} else {
 			if (!dabt->write)
 				set_reg_value(regs, dabt->reg, value);

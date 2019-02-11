@@ -661,7 +661,8 @@ virtio_console_add_backend(struct virtio_console *console,
 	if (virtio_console_backend_can_read(be_type)) {
 		if (isatty(fd)) {
 			be->evp = mevent_add(fd, EVF_READ,
-					virtio_console_backend_read, be);
+					virtio_console_backend_read, be,
+					MEVENT_F_CAN_WAKEUP);
 			if (be->evp == NULL) {
 				pr_warn("vtcon: mevent_add failed\n");
 				error = -1;
@@ -794,6 +795,7 @@ virtio_console_init(struct vdev *vdev, char *opts)
 		return rc;
 	}
 
+	vdev->flags |= VDEV_F_CAN_WAKEUP;
 	vdev_set_pdata(vdev, console);
 	console->virtio_dev.ops = &vcon_ops;
 

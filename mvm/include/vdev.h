@@ -4,7 +4,7 @@
 #include <mvm.h>
 #include <pthread.h>
 
-#define PDEV_NAME_SIZE		(31)
+#define PDEV_NAME_SIZE		(32)
 
 struct vdev;
 
@@ -18,8 +18,10 @@ struct vdev_ops {
 			unsigned long, unsigned long *);
 };
 
-#define VDEV_TYPE_PLATFORM	(0x0)
-#define VDEV_TYPE_VIRTIO	(0x1)
+#define VDEV_TYPE_PLATFORM	0
+#define VDEV_TYPE_VIRTIO	1
+
+#define VDEV_F_CAN_WAKEUP	(1 << 0)
 
 struct vdev {
 	struct vm *vm;
@@ -29,9 +31,10 @@ struct vdev {
 	size_t iomem_size;
 	struct vdev_ops *ops;
 	void *pdata;
-	int dev_type;
 	int id;
-	char name[PDEV_NAME_SIZE + 1];
+	int dev_type;
+	unsigned long flags;
+	char name[PDEV_NAME_SIZE];
 	struct list_head list;
 	pthread_mutex_t lock;
 };
