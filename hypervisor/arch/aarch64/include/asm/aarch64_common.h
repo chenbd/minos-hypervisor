@@ -1,6 +1,16 @@
 #ifndef _MINOS_AARCH64_COMMON_H_
 #define _MINOS_AARCH64_COMMON_H_
 
+/**
+ * SPSR_ELn Saved Program Status Register
+ * Holds the saved processor state when an exception is taken to this mode or
+ * Exception level
+ * • M[3:2] holds the Exception Level.
+ * • M[1] is unused and is RES 0 for all non-reserved values.
+ * • M[0] is used to select the SP:
+ * — 0 means the SP is always SP0.
+ * — 1 means the exception SP is determined by the EL.
+ */
 #define AARCH64_SPSR_EL3h	0b1101
 #define AARCH64_SPSR_EL3t	0b1100
 #define AARCH64_SPSR_EL2h	0b1001
@@ -8,18 +18,32 @@
 #define AARCH64_SPSR_EL1h	0b0101
 #define AARCH64_SPSR_EL1t	0b0100
 #define AARCH64_SPSR_EL0t	0b0000
+/* Execution state that the exception was taken from. */
 #define AARCH64_SPSR_RW		(1 << 4)
+/* FIQ mask bit. */
 #define AARCH64_SPSR_F		(1 << 6)
+/* IRQ mask bit. */
 #define AARCH64_SPSR_I		(1 << 7)
+/* SError interrupt mask bit. */
 #define AARCH64_SPSR_A		(1 << 8)
+/* Process state D mask. */
 #define AARCH64_SPSR_D		(1 << 9)
+/* Illegal Execution state bit. Shows the value of PSTATE.IL immediately before
+the exception was taken */
 #define AARCH64_SPSR_IL		(1 << 20)
+/* Software step. Shows the value of PSTATE.SS immediately before the exception
+ * was taken. */
 #define AARCH64_SPSR_SS		(1 << 21)
+/* V condition flag */
 #define AARCH64_SPSR_V		(1 << 28)
+/* C condition flag */
 #define AARCH64_SPSR_C		(1 << 29)
+/* Z condition flag */
 #define AARCH64_SPSR_Z		(1 << 30)
+/* N condition flag */
 #define AARCH64_SPSR_N		(1 << 31)
 
+/* AArch32 mode that an exception was taken from */
 #define AARCH32_USER		0b0000
 #define AARCH32_FIQ		0b0001
 #define AARCH32_IRQ		0b0010
@@ -38,6 +62,11 @@
 #define MODE_EL_MASK		(0x3UL)
 #define GET_EL(mode)		(((mode) >> MODE_EL_SHIFT) & MODE_EL_MASK)
 
+/**
+ * MPIDR_EL1, Multiprocessor Affinity Register
+ * In a multiprocessor system, provides an additional PE identification
+ * mechanism for scheduling purposes
+ */
 #define MPIDR_EL1_AFF3_LSB	32
 #define MPIDR_EL1_U		(1 << 30)
 #define MPIDR_EL1_MT		(1 << 24)
@@ -47,11 +76,21 @@
 #define MPIDR_EL1_AFF_WIDTH	8
 #define MIPIDR_AFF_SHIFT	2
 
+/**
+ * DCZID_ELn Data Cache Zero ID Register
+ * Indicates the block size that is written with byte values of 0 by the Data
+ * Cache Zero by virtual address (DCZVA) system instruction.
+ */
 #define DCZID_EL0_BS_LSB	0
 #define DCZID_EL0_BS_WIDTH	4
 #define DCZID_EL0_DZP_LSB	5
 #define DCZID_EL0_DZP		(1 << 5)
 
+/**
+ * SCTLR_ELn System Control Register
+ * Controls architectural features, for example the MMU, caches and alignment
+ * checking.
+ */
 #define SCTLR_EL1_UCI		(1 << 26)
 #define SCTLR_ELx_EE		(1 << 25)
 #define SCTLR_EL1_E0E		(1 << 24)
@@ -76,13 +115,24 @@
 #define SCTLR_ELx_A_BIT		(1)
 #define SCTLR_ELx_M_BIT		(0)
 
+/**
+ * CPACR_ELn Coprocessor Access Control Register
+ * Controls access to trace, floating-point, and SIMD functionality.
+ */
 #define CPACR_EL1_TTA		(1 << 28)
 #define CPACR_EL1_FPEN		(3 << 20)
 
+/**
+ * Architectural Feature Trap Register
+ */
 #define CPTR_ELx_TCPAC		(1 << 31)
 #define CPTR_ELx_TTA		(1 << 20)
 #define CPTR_ELx_TFP		(1 << 10)
 
+/**
+ * SCR_ELn Secure Configuration Register
+ * Controls Secure state and trapping of exceptions to EL3.
+ */
 #define SCR_EL3_TWE		(1 << 13)
 #define SCR_EL3_TWI		(1 << 12)
 #define SCR_EL3_ST		(1 << 11)
@@ -95,6 +145,10 @@
 #define SCR_EL3_IRQ		(1 << 1)
 #define SCR_EL3_NS		(1 << 0)
 
+/**
+ * HCR_ELn Hypervisor Configuration Register
+ * Controls virtualization settings and trapping of exceptions to EL2.
+ */
 #define HCR_EL2_VM		(1ul << 0)
 #define HCR_EL2_SWIO		(1ul << 1)
 #define HCR_EL2_PTW		(1ul << 2)
