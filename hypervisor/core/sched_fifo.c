@@ -231,7 +231,7 @@ static int fifo_can_idle(struct pcpu *pcpu)
 }
 
 static struct sched_class sched_fifo = {
-	.name			= "fifo",
+	.name			= SCHED_CLASS_FIFO,
 	.flags			= 0,
 	.sched_interval		= MILLISECS(100),
 	.set_vcpu_state		= fifo_set_vcpu_state,

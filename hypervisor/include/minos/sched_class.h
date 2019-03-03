@@ -4,8 +4,13 @@
 struct vcpu;
 struct pcpu;
 
+enum {
+	SCHED_CLASS_FIFO = 0,
+	MAX_SCHED_CLASS,
+};
+
 struct sched_class {
-	char *name;
+	int32_t name;
 	unsigned long flags;
 	unsigned long sched_interval;
 	struct vcpu *(*pick_vcpu)(struct pcpu *);
@@ -23,7 +28,7 @@ struct sched_class {
 	int (*can_idle)(struct pcpu *);
 };
 
-struct sched_class *get_sched_class(char *name);
+struct sched_class *get_sched_class(int32_t cls);
 int register_sched_class(struct sched_class *cls);
 
 #endif

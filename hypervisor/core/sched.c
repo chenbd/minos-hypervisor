@@ -331,7 +331,7 @@ int sched_init(void)
 	for (i = 0; i < NR_CPUS; i++) {
 		atomic_set(&get_per_cpu(preempt, i), 0);
 		pcpu = get_per_cpu(pcpu, i);
-		pcpu->sched_class = get_sched_class("fifo");
+		pcpu->sched_class = get_sched_class(SCHED_CLASS_FIFO);
 		pcpu->sched_class->init_pcpu_data(pcpu);
 	}
 
