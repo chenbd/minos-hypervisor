@@ -674,7 +674,7 @@ static void gicv2_state_resume(struct vcpu *vcpu, void *context)
 	gicv2_state_init(vcpu, context);
 }
 
-static int gicv2_vmodule_init(struct vmodule *vmodule)
+static void gicv2_vmodule_init(struct vmodule *vmodule)
 {
 	vmodule->context_size = sizeof(struct gicv2_context);
 	vmodule->pdata = NULL;
@@ -682,8 +682,6 @@ static int gicv2_vmodule_init(struct vmodule *vmodule)
 	vmodule->state_save = gicv2_state_save;
 	vmodule->state_restore = gicv2_state_restore;
 	vmodule->state_resume = gicv2_state_resume;
-
-	return 0;
 }
 
 int vgicv2_init(uint64_t *data, int len)
@@ -703,7 +701,5 @@ int vgicv2_init(uint64_t *data, int len)
 	vtr = readl_relaxed((void *)vgicv2_info.gich_base + GICH_VTR);
 	gicv2_nr_lrs = (vtr & 0x3f) + 1;
 
-	register_vcpu_vmodule("gicv2", gicv2_vmodule_init);
-
-	return 0;
+	return register_vcpu_vmodule("vgicv2", gicv2_vmodule_init);
 }

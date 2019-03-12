@@ -87,15 +87,13 @@ static void vfp_state_restore(struct vcpu *vcpu, void *context)
                      : : "Q" (*c->regs), "r" (c->regs));
 }
 
-static int vfp_vmodule_init(struct vmodule *vmodule)
+static void vfp_vmodule_init(struct vmodule *vmodule)
 {
 	vmodule->context_size	= sizeof(struct vfp_context);
 	vmodule->pdata		= NULL;
 	vmodule->state_init	= vfp_state_init;
 	vmodule->state_save	= vfp_state_save;
 	vmodule->state_restore	= vfp_state_restore;
-
-	return 0;
 }
 
 MINOS_MODULE_DECLARE(vfp, "vfp", (void *)vfp_vmodule_init);

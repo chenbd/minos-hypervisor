@@ -42,8 +42,6 @@ struct vtimer_context {
 	unsigned long offset;
 };
 
-extern int vtimer_vmodule_id;
-
 int vtimer_sysreg_simulation(gp_regs *reg, uint32_t esr_value);
 
 #endif

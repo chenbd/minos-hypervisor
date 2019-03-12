@@ -933,7 +933,7 @@ static void gicv3_state_resume(struct vcpu *vcpu, void *context)
 	gicv3_state_init(vcpu, context);
 }
 
-static int gicv3_vmodule_init(struct vmodule *vmodule)
+static void gicv3_vmodule_init(struct vmodule *vmodule)
 {
 	vmodule->context_size = sizeof(struct gicv3_context);
 	vmodule->pdata = NULL;
@@ -941,8 +941,6 @@ static int gicv3_vmodule_init(struct vmodule *vmodule)
 	vmodule->state_save = gicv3_state_save;
 	vmodule->state_restore = gicv3_state_restore;
 	vmodule->state_resume = gicv3_state_resume;
-
-	return 0;
 }
 
 int vgicv3_init(uint64_t *data, int len)
@@ -962,7 +960,5 @@ int vgicv3_init(uint64_t *data, int len)
 	gicv3_nr_lr = (val & 0x3f) + 1;
 	gicv3_nr_pr = ((val >> 29) & 0x7) + 1;
 
-	register_vcpu_vmodule("gicv3-vmodule", gicv3_vmodule_init);
-
-	return 0;
+	return register_vcpu_vmodule("vgicv3", gicv3_vmodule_init);
 }

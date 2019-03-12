@@ -38,8 +38,7 @@ static struct vmodule *create_vmodule(struct module_id *id)
 	}
 
 	memset(vmodule, 0, sizeof(*vmodule));
-	strncpy(vmodule->name, id->name, sizeof(vmodule->name) - 1);
-	init_list(&vmodule->list);
+	vmodule->name = id->name;
 	vmodule->id = vmodule_class_nr++;
 
 	/* call init routine */
@@ -63,7 +62,7 @@ int register_vcpu_vmodule(const char *name, vmodule_init_fn fn)
 		return -ENOMEM;
 	}
 
-	return 0;
+	return vmodule->id;
 }
 
 void *get_vmodule_data_by_id(struct vcpu *vcpu, int id)

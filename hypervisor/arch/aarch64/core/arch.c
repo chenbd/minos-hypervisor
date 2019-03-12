@@ -55,7 +55,6 @@ struct aarch64_system_context {
 	uint32_t ifsr32_el2;
 }__align(sizeof(unsigned long));
 
-#define AARCH64_SYSTEM_VMODULE	"aarch64-system"
 
 extern int el2_stage2_init(void);
 extern int el2_stage1_init(void);
@@ -368,7 +367,7 @@ static void aarch64_system_state_restore(struct vcpu *vcpu, void *c)
 	dsb();
 }
 
-static int aarch64_system_init(struct vmodule *vmodule)
+static void aarch64_system_init(struct vmodule *vmodule)
 {
 	vmodule->context_size = sizeof(struct aarch64_system_context);
 	vmodule->pdata = NULL;
@@ -376,9 +375,7 @@ static int aarch64_system_init(struct vmodule *vmodule)
 	vmodule->state_save = aarch64_system_state_save;
 	vmodule->state_restore = aarch64_system_state_restore;
 	vmodule->state_resume = aarch64_system_state_resume;
-
-	return 0;
 }
 
-MINOS_MODULE_DECLARE(aarch64_system,
-	AARCH64_SYSTEM_VMODULE, (void *)aarch64_system_init);
+MINOS_MODULE_DECLARE(aarch64_system, "aarch64-system",
+		     (void *)aarch64_system_init);

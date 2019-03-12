@@ -27,7 +27,7 @@
 static uint32_t __hw_virtual_irq;
 static uint32_t	__hw_phy_irq;
 
-int vtimer_vmodule_id = INVALID_MODULE_ID;
+static int vtimer_vmodule_id = INVALID_MODULE_ID;
 
 #define get_access_vtimer(vtimer, c, access)		\
 	do {						\
@@ -263,7 +263,7 @@ static inline int vtimer_phy_mem_handler(gp_regs *regs, int read,
 	return 0;
 }
 
-static int vtimer_vmodule_init(struct vmodule *vmodule)
+static void vtimer_vmodule_init(struct vmodule *vmodule)
 {
 	vmodule->context_size = sizeof(struct vtimer_context);
 	vmodule->pdata = NULL;
@@ -272,16 +272,15 @@ static int vtimer_vmodule_init(struct vmodule *vmodule)
 	vmodule->state_restore = vtimer_state_restore;
 	vmodule->state_deinit = vtimer_state_deinit;
 	vmodule->state_reset = vtimer_state_deinit;
-	vtimer_vmodule_id = vmodule->id;
-
-	return 0;
 }
 
 int arch_vtimer_init(uint32_t virtual_irq, uint32_t phy_irq)
 {
 	__hw_virtual_irq = virtual_irq;
 	__hw_phy_irq = phy_irq;
-	register_vcpu_vmodule("vtimer_module", vtimer_vmodule_init);
+	vtimer_vmodule_id =
+		register_vcpu_vmodule("vtimer", vtimer_vmodule_init);
 
+	BUG_ON(vtimer_vmodule_id < 0);
 	return 0;
 }

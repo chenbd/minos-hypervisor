@@ -179,7 +179,7 @@ static void vmsa_state_resume(struct vcpu *vcpu, void *context)
 	vmsa_state_init(vcpu, context);
 }
 
-static int vmsa_vmodule_init(struct vmodule *vmodule)
+static void vmsa_vmodule_init(struct vmodule *vmodule)
 {
 	vmodule->context_size = sizeof(struct vmsa_context);
 	vmodule->pdata = NULL;
@@ -187,8 +187,6 @@ static int vmsa_vmodule_init(struct vmodule *vmodule)
 	vmodule->state_save = vmsa_state_save;
 	vmodule->state_restore = vmsa_state_restore;
 	vmodule->state_resume = vmsa_state_resume;
-
-	return 0;
 }
 
 MINOS_MODULE_DECLARE(vmsa, "armv8-mmu", (void *)vmsa_vmodule_init);
