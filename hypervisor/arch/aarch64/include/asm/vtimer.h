@@ -42,6 +42,7 @@ struct vtimer_context {
 	unsigned long offset;
 };
 
-int vtimer_sysreg_simulation(gp_regs *reg, uint32_t esr_value);
+extern int vtimer_sysreg_simulation(gp_regs *reg, uint32_t esr_value);
 
+extern int arch_vtimer_init(uint32_t virtual_irq, uint32_t phy_irq);
 #endif

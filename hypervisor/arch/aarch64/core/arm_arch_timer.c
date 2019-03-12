@@ -57,7 +57,6 @@ uint32_t cpu_khz = 0;
 uint64_t boot_tick = 0;
 
 extern unsigned long sched_tick_handler(unsigned long data);
-extern int arch_vtimer_init(uint32_t virtual_irq, uint32_t phy_irq);
 
 void arch_enable_timer(unsigned long expires)
 {

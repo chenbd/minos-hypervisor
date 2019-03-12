@@ -469,7 +469,7 @@ DEFINE_SYNC_DESC(EC_VCTOR_CATCH, EC_TYPE_AARCH32,
 DEFINE_SYNC_DESC(EC_BRK_INS, EC_TYPE_AARCH64,
 		brk_ins_handler, 1, 4);
 
-void sync_from_lower_EL_handler(gp_regs *data)
+static void sync_from_lower_EL_handler(gp_regs *data)
 {
 	int cpuid = smp_processor_id();
 	uint32_t esr_value;
@@ -502,7 +502,7 @@ out:
 	enter_to_guest(get_current_vcpu(), NULL);
 }
 
-void sync_from_current_EL_handler(gp_regs *data)
+static void sync_from_current_EL_handler(gp_regs *data)
 {
 	uint32_t esr_value;
 	uint32_t ec_type;

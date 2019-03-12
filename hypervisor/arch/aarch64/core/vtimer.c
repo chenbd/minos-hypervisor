@@ -25,7 +25,7 @@
 #include <minos/virq.h>
 
 static uint32_t __hw_virtual_irq;
-static uint32_t	__hw_phy_irq;
+static uint32_t __hw_phy_irq;
 
 static int vtimer_vmodule_id = INVALID_MODULE_ID;
 
@@ -211,36 +211,6 @@ static void vtimer_handle_cntp_cval(gp_regs *regs,
 	}
 }
 
-int vtimer_sysreg_simulation(gp_regs *regs, uint32_t esr_value)
-{
-	struct esr_sysreg *sysreg = (struct esr_sysreg *)&esr_value;
-	uint32_t reg = esr_value & ESR_SYSREG_REGS_MASK;
-	unsigned long value = 0;
-	int read = sysreg->read;
-
-	if (!read)
-		value = get_reg_value(regs, sysreg->reg);
-
-	switch (reg) {
-	case ESR_SYSREG_CNTP_CTL_EL0:
-		vtimer_handle_cntp_ctl(regs, ACCESS_REG, read, &value);
-		break;
-	case ESR_SYSREG_CNTP_CVAL_EL0:
-		vtimer_handle_cntp_cval(regs, ACCESS_REG, read, &value);
-		break;
-	case ESR_SYSREG_CNTP_TVAL_EL0:
-		vtimer_handle_cntp_tval(regs, ACCESS_REG, read, &value);
-		break;
-	default:
-		break;
-	}
-
-	if (read)
-		set_reg_value(regs, sysreg->reg, value);
-
-	return 0;
-}
-
 static inline int vtimer_phy_mem_handler(gp_regs *regs, int read,
 		unsigned long address, unsigned long *value)
 {
@@ -272,6 +242,36 @@ static void vtimer_vmodule_init(struct vmodule *vmodule)
 	vmodule->state_restore = vtimer_state_restore;
 	vmodule->state_deinit = vtimer_state_deinit;
 	vmodule->state_reset = vtimer_state_deinit;
+}
+
+int vtimer_sysreg_simulation(gp_regs *regs, uint32_t esr_value)
+{
+	struct esr_sysreg *sysreg = (struct esr_sysreg *)&esr_value;
+	uint32_t reg = esr_value & ESR_SYSREG_REGS_MASK;
+	unsigned long value = 0;
+	int read = sysreg->read;
+
+	if (!read)
+		value = get_reg_value(regs, sysreg->reg);
+
+	switch (reg) {
+	case ESR_SYSREG_CNTP_CTL_EL0:
+		vtimer_handle_cntp_ctl(regs, ACCESS_REG, read, &value);
+		break;
+	case ESR_SYSREG_CNTP_CVAL_EL0:
+		vtimer_handle_cntp_cval(regs, ACCESS_REG, read, &value);
+		break;
+	case ESR_SYSREG_CNTP_TVAL_EL0:
+		vtimer_handle_cntp_tval(regs, ACCESS_REG, read, &value);
+		break;
+	default:
+		break;
+	}
+
+	if (read)
+		set_reg_value(regs, sysreg->reg, value);
+
+	return 0;
 }
 
 int arch_vtimer_init(uint32_t virtual_irq, uint32_t phy_irq)
